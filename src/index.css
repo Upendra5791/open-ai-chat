@@ -1,3 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +24,114 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+
+.sender-indicator{
+  height: 25px;
+  min-width: 25px;
+  display: grid;
+  place-items: center;
+}
+
+.chat-message {
+  /* background-color: #00838f; */
+  background-color: #6d1d83;
+ border-radius: 1.5rem 1.5rem  1.5rem 0
+  /* box-shadow: 2px 2px 8px -3px #6c7791; */
+}
+
+.chat-input textarea {
+  resize: none;
+  /* border-radius: 0.25rem 0 0 0.25rem; */
+}
+.chat-input textarea::-webkit-scrollbar { width: 0 !important }
+/* .chat-input button {
+  border-radius: 0 0.25rem 0.25rem 0;
+  height: 41px;
+} */
+
+.new-search-bar {
+  width: calc(100% - 30px);
+}
+
+/* .new-search-bar input {
+  width: 0;
+  padding: 0;
+} */
+/* .new-search-bar input.show {
+  width: 100%;
+} */
+.new-search-bar input {
+  background-color: #232c41;
+}
+.new-search-bar .close {
+ top: 50%;
+ transform: translateY(-50%) rotate(45deg);
+}
+
+.search-results {
+  background-color: #0b111f;
+  /* margin-left: -16px; */
+  top: 60px;
+  height: calc(100% - 60px);
+}
+
+.chat-assistant {
+  width: calc(100% - 135px);
+  height: 260px;
+  position: absolute;
+  background-color: #0b111f;
+  bottom: 65px;
+  border: 2px solid red;
+  padding: 20px;
+  /* left: 50%; */
+  border-radius: 20px;
+  transform: translateX(-100%);
+  transition: 0.5s cubic-bezier(0.57, 0.56, 0.24, 1.26);
+  /* visibility: hidden; */
+}
+
+.chat-assistant.pop.show {
+  /* visibility: visible; */
+  transform: translateX(0);
+}
+
+.chat-assistant.pop {
+  transform: translateX(-98%);
+}
+
+.chat-assistant .languages {
+  background: #0b111f;
+    color: inherit;
+    border-bottom: 1px solid white;
+    padding: 2px 2px 0 2px;
+}
+
+
+/* chats.tsx */
+.message {
+  width: calc(100% - 32px);
+}
+
+.msg-count {
+
 }
