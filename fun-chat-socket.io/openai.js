@@ -1,6 +1,7 @@
 // import OpenAI from "openai";
 const OpenAI = require('openai');
-const OPENAI_API_KEY = "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";
+// const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY="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";
 
 
 /*
