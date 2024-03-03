@@ -4,35 +4,43 @@ import { Chat, RecieveMessageResponse, addChat, addNewMessage } from "./store/Ch
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store/store";
 import { addChatToIndexedDB, addMessageToChat } from "./utils/indexedDB";
-
+// const DEFAULT_AI_CHAT_ID = 'ai-chat';
+const DEFAULT_AI_SENDER_ID = 'open-ai-v1';
 
 export const SocketMessageHandler = () => {
 
     const dispatch = useDispatch();
     const user = useSelector((state: AppState) => state.user);
-    const chats = useSelector((state: AppState) => {
-        return state.chatsSlice.chats
-    });
+    const chats = useSelector((state: AppState) => state.chatsSlice.chats);
 
-    useEffect(() => {
+/*     const greetUser = () => {
         if (!!user && !!Object.keys(user).length) {
             socket.emit('greet_user', {
                 senderId: user.id,
-                recipientId: 'open-ai-v1',
+                recipientId: DEFAULT_AI_SENDER_ID,
                 user: user
             });
         }
-    }, [user])
+    } */
+
+    // useEffect(() => {
+    //     // when user is first added to state greet user to initiate Assistant
+    //     greetUser()
+    // }, [user]);
+
+    const addMessageToDB = () => {
+
+    }
 
     useEffect(() => {
         const onConnect = () => {
           console.log('Socket Connected!');
-          socket?.emit('chat_register', user, (response: any) => {
-            console.log(response.message);
-            if (response.status === 0) {
-              console.log('User registered with new Socket');
-            }
-          });
+        //   socket?.emit('chat_register', user, (response: any) => {
+        //     console.log(response.message);
+        //     if (response.status === 0) {
+        //       console.log('User registered with new Socket');
+        //     }
+        //   });
         }
         const onDisconnect = () => {
           console.log('Socket Disconnected!');
@@ -44,7 +52,7 @@ export const SocketMessageHandler = () => {
                     message: response.message,
                     chat: existingChat
                 }));
-                const newMsgCount = existingChat.unreadMessageCount === undefined ? 1 : existingChat.unreadMessageCount+1;
+                const newMsgCount = !existingChat.unreadMessageCount ? 1 : existingChat.unreadMessageCount+1;
                 existingChat && addMessageToChat({
                     chat: {
                         ...existingChat,
@@ -52,7 +60,6 @@ export const SocketMessageHandler = () => {
                     },
                     message: response.message,
                 }).then(() => console.log('Message updated in DB'));
-                // dispatch(setCurrentChat(response.sender.id)); // this is the recipientId
             } else {
                 const newChat: Chat = {
                     id: response.sender.id,
@@ -67,7 +74,6 @@ export const SocketMessageHandler = () => {
                 addChatToIndexedDB(newChat)
                     .then(() => {
                         console.log('Chat added to IndexedDB!');
-                        // dispatch(setCurrentChat(response.sender.id));
                     })
                     .catch(error => {
                         console.error('Error saving user to IndexedDB:', error);

@@ -8,31 +8,23 @@ import { addMessageToChat, resetUnreadMessageCount } from '../utils/indexedDB';
 import { IoSendSharp } from "react-icons/io5";
 import { IoChevronBack } from "react-icons/io5";
 import { SiGoogleassistant } from "react-icons/si";
-
-const languages = [
-    'English',
-    'Nepali',
-    'Hindi',
-    'Tamil'
-]
+import AssistantWidget from './AssistantWidget';
 
 const Chat = () => {
     const [inputMessage, setInputMessage] = useState<string>('');
     const [showAssistant, setShowAssistant] = useState<boolean>(false);
     const [messageLoading, setMessageLoading] = useState<boolean>(false);
     const [translate, setTranslate] = useState<boolean>(false);
-    const [language, setLanguage] = useState<string>(languages[0]);
+    const [language, setLanguage] = useState<string>('');
     const [assistantClass, setAssistantClass] = useState<string>('chat-assistant');
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state: AppState) => state.user);
-    const chat = useSelector((state: AppState) => {
-        return state.chatsSlice.chats.find(f => f.isCurrentChat)
-    });
+    const chat = useSelector((state: AppState) => state.chatsSlice.chats.find(f => f.isCurrentChat));
     const messages = chat?.messages;
     const messageRef = useRef<any>(null);
     const displayAssistantWidget = chat?.recipientId !== 'open-ai-v1';
-    
+
     const focusLastMessage = () => {
         const msgs = messageRef.current?.querySelectorAll('li');
         if (!msgs) return;
@@ -46,7 +38,7 @@ const Chat = () => {
 
     const updateUnreadMessageCount = () => {
         if (chat) {
-            dispatch(updateMessageReadStatus({chat}));
+            dispatch(updateMessageReadStatus({ chat }));
             resetUnreadMessageCount(chat);
         }
     }
@@ -70,7 +62,6 @@ const Chat = () => {
     }, [showAssistant])
 
     const sendMessage = (newMessage: Message) => {
-        
         chat && dispatch(addNewMessage({
             message: newMessage,
             chat: chat
@@ -83,7 +74,6 @@ const Chat = () => {
         setInputMessage('');
         setMessageLoading(false);
         // update the message to the DB
-        // const newMsgCount = chat?.unreadMessageCount === undefined ? 1 : chat.unreadMessageCount+1;
         chat && addMessageToChat({
             chat: chat,
             message: newMessage
@@ -93,7 +83,6 @@ const Chat = () => {
     const handleSendMessage = async () => {
         if (!messageLoading && inputMessage.trim() !== '') {
             setMessageLoading(true);
-            //   const newMessages = [...messages, inputMessage];
             const newMessage: Message = {
                 text: inputMessage,
                 time: new Date().toString(),
@@ -102,21 +91,14 @@ const Chat = () => {
             }
             if (translate && language) {
                 // do the assistant operation then update the message
-                socket.emit('send_message_ai', { message: newMessage, language}, (res: string) => {
+                socket.emit('send_message_ai', { message: newMessage, language }, (res: string) => {
                     if (res.includes('Unable to Translate')) {
                         alert('Unable to Translate');
-                    } else { 
+                    } else {
                         newMessage.text = res;
                     }
                     sendMessage(newMessage);
                 });
-                // const updatedMessage = await postMessageToAI({message: newMessage.text, language});
-                // if (updatedMessage.includes('Unable to Translate')) {
-                //     alert('Unable to Translate')
-                // } else { 
-                //     newMessage.text = updatedMessage;
-                // }
-                
             } else sendMessage(newMessage);
         }
     };
@@ -147,7 +129,7 @@ const Chat = () => {
         return chatWidget?.contains(e.target as Node);
     }
     const hideAssistant = (e: React.MouseEvent) => {
-        if (showAssistant && !clickedOnAssistant(e))  setShowAssistant(false);
+        if (showAssistant && !clickedOnAssistant(e)) setShowAssistant(false);
     }
     const toggleAssistant = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -177,7 +159,7 @@ const Chat = () => {
                 <div className="p-4 mt-12">
                     <ul ref={messageRef}>
                         {messages?.map((message, index) => {
-                            let contClass = isMessageSelf(message) ? 'justify-self-end' : 'justify-self-start';
+                            let contClass = isMessageSelf(message) ? 'justify-self-end sender' : 'justify-self-start reciever';
                             contClass += ' flex'
                             return (
                                 <li key={message.time}
@@ -201,18 +183,12 @@ const Chat = () => {
                 </div>
             </div>
             <div className="chat-input p-4 flex items-center text-black relative">
-                {/* <input
-                    type="text"
-                    className="flex-grow border rounded px-4 py-2"
-                    placeholder="Type your message..."
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)} */}
-                {displayAssistantWidget && 
-                <div className='cursor-pointer assistant text-red-500 h-10 w-10 grid place-items-center text-2xl'
-                    onClick={toggleAssistant}
-                >
-                    <SiGoogleassistant />
-                </div>}
+                {displayAssistantWidget &&
+                    <div className='cursor-pointer assistant text-red-500 h-10 w-10 grid place-items-center text-2xl'
+                        onClick={toggleAssistant}
+                    >
+                        <SiGoogleassistant />
+                    </div>}
                 <textarea rows={1}
                     className="flex-grow border rounded-full px-4 py-2"
                     placeholder="Type your message..."
@@ -220,38 +196,21 @@ const Chat = () => {
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyDown={handleKeyPressEvent}
                 />
-                {/* <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={handleSendMessage}
-                >
-                    Send
-                </button> */}
                 <div onClick={handleSendMessage} className="cursor-pointer absolute right-4 h-10 w-10 grid place-items-center text-2xl">
-                    <IoSendSharp className={messageLoading ? 'text-slate-600' : ''}/>
+                    <IoSendSharp className={messageLoading ? 'text-slate-600' : ''} />
                 </div>
 
             </div>
 
             {displayAssistantWidget &&
-                <div className={assistantClass}
-                onClick={expandAssistant}>
-                    <input id="translate" type='checkbox' checked={translate} value='translate'
-                        onChange={() => setTranslate(!translate)} />
-                    <label htmlFor='translate' className={translate ? '' : 'text-slate-400'}>
-                        <span className='pl-2'>Translate your message to &nbsp;
-                            <select className='languages'
-                                value={language}
-                                onChange={(e) => setLanguage(e.target.value)}>
-                                {
-                                    languages.map(l => {
-                                        return <option key={l} value={l}>{l}</option>
-                                    })
-                                }
-                            </select>
-                            &nbsp; before sending</span>
-                    </label>
-
-                </div>
+                <AssistantWidget
+                    assistantClass={assistantClass}
+                    language={language}
+                    translate={translate}
+                    setTranslate={setTranslate}
+                    expandAssistant={expandAssistant}
+                    setLanguage={setLanguage}
+                />
             }
         </div>
     );

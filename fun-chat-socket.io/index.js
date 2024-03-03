@@ -20,14 +20,26 @@ const assistantUser = {
   name: "Assistant",
 };
 
+// io.use((socket, next) => {
+//   const username = socket.handshake.auth.username;
+//   if (!username) {
+//     return next(new Error("invalid username"));
+//   }
+//   socket.username = username;
+//   next();
+// });
+
 io.on("connection", (socket) => {
+  const userId = socket.handshake.auth.userId;
+  socket.userId = userId;
   console.log("A user connected: " + socket.id);
+  userSocketMap[userId] = socket.id;
 
   // socket check
   socket.on("socket_check", (user, callback) => {
     try {
       // check if userId already mapped with existing socket
-      usersListDB.push(user);
+      // usersListDB.push(user);
       userSocketMap[user.id] = socket.id;
       console.log(
         "User " + user.id + " registered with socket ID " + socket.id
@@ -49,22 +61,31 @@ io.on("connection", (socket) => {
   // Handling chat register
   socket.on("chat_register", (user, callback) => {
     try {
-      // Store the mapping of user ID to socket ID
-      if (!usersListDB.find((f) => f.id === user.id)) {
-        usersListDB.push(user);
-        console.log(
-          "User " + user.id + " registered with socket ID " + socket.id
-        );
+      if (usersListDB.find((f) => f.name.toLowerCase() === user.name.toLowerCase())) {
+        callback({
+          status: 3,
+          message: "User name already registered!",
+          socketId: socket.id,
+        });
       } else {
-        console.log("Existing User " + user.id + " registered with socket ID " + socket.id);
-      }
-      userSocketMap[user.id] = socket.id;
+        // Store the mapping of user ID to socket ID
+        if (!usersListDB.find((f) => f.id === user.id)) {
+          usersListDB.push(user);
+          console.log(
+            "User " + user.id + " registered with socket ID " + socket.id
+          );
+        } else {
+          console.log("Existing User " + user.id + " registered with socket ID " + socket.id);
+        }
+        userSocketMap[user.id] = socket.id;
 
-      callback({
-        status: 0,
-        message: "User successfully registered!",
-        socketId: socket.id,
-      });
+        callback({
+          status: 0,
+          message: "User successfully registered!",
+          socketId: socket.id,
+        });
+      }
+      
     } catch (e) {
       callback({
         status: 1,
@@ -72,7 +93,7 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     }
-  });
+    });
 
   // Handling messages
   socket.on("send_message", (data) => {

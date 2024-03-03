@@ -52,10 +52,17 @@ code {
   place-items: center;
 }
 
-.chat-message {
+.sender .chat-message {
   /* background-color: #00838f; */
   background-color: #6d1d83;
- border-radius: 1.5rem 1.5rem  1.5rem 0
+ border-radius: 1.5rem 1.5rem  0 1.5rem ;
+  /* box-shadow: 2px 2px 8px -3px #6c7791; */
+}
+
+.reciever .chat-message {
+  /* background-color: #00838f; */
+  background-color: #6d1d83;
+ border-radius: 1.5rem 1.5rem  1.5rem 0;
   /* box-shadow: 2px 2px 8px -3px #6c7791; */
 }
 
@@ -132,6 +139,30 @@ code {
   width: calc(100% - 32px);
 }
 
-.msg-count {
-
+/* Landing Page  */
+.register-screen .username {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid #00ff9d;
+  text-align: center;
+  transition: 0.2s ease;
 }
+
+.register-screen .username:focus {
+  outline: none;
+}
+
+.register-screen .register {
+  transition: 0.3s ease;
+}
+
+.register-screen .error {
+opacity: 0;
+transition: 0.4s ease;
+transform: translateY(50px);
+}
+
+.register-screen .error.show {
+opacity: 1;
+transform: translateY(0);
+  }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
 import { useUniqueId } from '../hooks/useUniqueID';
 import { useNavigate } from 'react-router-dom';
 import { User, updateUser } from '../store/UserSlice';
@@ -11,11 +10,11 @@ import { saveUserToIndexedDB } from '../utils/indexedDB';
 const LandingPage = () => {
     const [userId, setUserId] = useState<string>('');
     const [userName, setUserName] = useState<string>('');
+    const [showError, setshowError] = useState<boolean>(false);
     const [userChecked, setUserChecked] = useState<boolean>(false);
     const uniqueID = useUniqueId(userName);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    // const user = useGetUserFromIndexedDB();
     const user = useSelector((state: AppState) => state.user);
 
     const saveUser = (newUser: User) => {
@@ -33,6 +32,7 @@ const LandingPage = () => {
     }
 
     const registerChatToSocket = (user: any) => {
+        socket.auth = { userId: user.id };
         socket.connect();
         socket.emit('chat_register', user, (response: any) => {
             console.log(response.message);
@@ -43,14 +43,14 @@ const LandingPage = () => {
                     socketId: response.socketId
                 }
                 saveUser(newUser)
-
+            } else if (response.status === 3) {
+                setshowError(true);
             }
         });
     }
 
     useEffect(() => {
         if (!!user && !!Object.keys(user).length) {
-            dispatch(updateUser(user));
             navigate('/chats');
         } else {
             setUserChecked(true);
@@ -67,28 +67,40 @@ const LandingPage = () => {
         registerChatToSocket(user);
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserName(e.target.value);
+        setshowError(false);
+    }
+
+    const errorClass = (): string => {
+        return showError ? 'error show mt-8 absolute bottom-4' : 'error mt-8 absolute bottom-4';
+    }
+
     return (
         <>
-            {userChecked && <div className="min-h-screen flex flex-col items-center justify-center">
-                {/* Header */}
-                <h1 className="text-4xl font-bold mb-8">Fun Chat</h1>
+            {userChecked && <div className="register-screen min-h-screen flex flex-col items-center justify-center">
+                {/* <h1 className="text-4xl font-bold mb-8">Fun Chat</h1> */}
+                <div className='form-input flex flex-col items-center justify-center w-80 h-80 relative overflow-hidden '>
+                    <input
+                        type="text"
+                        value={userName}
+                        onChange={handleInputChange}
+                        className="username px-4 py-2 mb-4 text-white"
+                        placeholder="Enter you user name"
+                    />
 
-                {/* Input Box */}
-                <input
-                    type="text"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    className="w-70p border border-gray-300 rounded-md px-4 py-2 mb-4 text-black"
-                    placeholder="Enter your name"
-                />
+                    <button
+                        className="register bg-transparent border-2 hover:bg-green-400 border-green-400 text-white py-2 px-6 rounded-full"
+                        onClick={handleRegisterClick}
+                    >
+                        Register
+                    </button>
 
-                {/* Register Button */}
-                <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={handleRegisterClick}
-                >
-                    Register
-                </button>
+                    <div className={errorClass()}>
+                        <p className='text-red-500'>Sorry, user name {userName} is already taken!</p>
+                    </div>
+                </div>
+
             </div>}
         </>
     );
