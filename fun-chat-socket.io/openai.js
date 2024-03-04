@@ -1,8 +1,9 @@
 // import OpenAI from "openai";
 const OpenAI = require('openai');
-const OPENAI_API_KEY = "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";
-
-
+// const OPENAI_API_KEY = "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";
+// const OPENAI_API_KEY="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";
+// const OPENAI_API_KEY="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";
+const OPENAI_API_KEY="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";
 /*
 content: `You are a helpful chat assistant in a Chat application. Translate the user provided message to ${language}. Correct the text before translating if any grammatical error exists. Only return the translated message after translation. If unable to translate then return message - Unable to Translate. Sample input: Where do you live? Expected Output: तपाईं कहाँ बस्नुहुन्छ?`,
  */
@@ -43,6 +44,9 @@ const translateMessage = async ({
         });
         resolve(chatCompletion.choices[0].message.content || '');
       } catch (e) {
+        if (e.status === 401) {
+          console.log('invalid_api_key');
+        }
         reject("Error Sending Message");
       }
   })
@@ -65,6 +69,9 @@ const postMessageToAI = (message) => {
         });
         resolve(chatCompletion.choices[0].message.content || '');
       } catch (e) {
+        if (e.status === 401) {
+          console.log('invalid_api_key');
+        }
         reject("Error Sending Message");
       }
   })

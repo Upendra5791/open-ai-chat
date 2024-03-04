@@ -146,6 +146,9 @@ io.on("connection", (socket) => {
       })
       .then((res) => {
         callback(res);
+      },
+      (err) => {
+        console.log(err);
       });
   });
 
@@ -180,6 +183,9 @@ io.on("connection", (socket) => {
           sender: assistantUser,
           message: assistantMessage,
         });
+      },
+      (err) => {
+        console.log(err)
       })
     } catch(e) {
       console.log('Error Greeting the user!');
