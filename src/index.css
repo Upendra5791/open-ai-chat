@@ -47,6 +47,13 @@ code {
     monospace;
 }
 
+input:not([type="radio"]):not([type="checkbox"]):not([id="searchUser"]),
+select {
+  /* border-radius: 0; */
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+}
+
 
 .sender-indicator{
   height: 25px;

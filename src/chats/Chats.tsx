@@ -42,7 +42,7 @@ const Chats = () => {
                                     <div className="text-sm text-gray-500">{getDisplayTime(latestMessage?.time)}</div>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <div className="message text-sm text-gray-200 text-ellipsis text-nowrap overflow-hidden text-sm">{latestMessage?.text}</div>
+                                    <div className="message text-sm text-gray-200 text-ellipsis text-nowrap overflow-hidden text-sm whitespace-nowrap">{latestMessage?.text}</div>
                                     {
                                         !!chat.unreadMessageCount && <div className='msg-count h-5 w-5 grid place-items-center text-xs text-white rounded-full bg-green-500'>
                                             {chat.unreadMessageCount}
