@@ -81,6 +81,7 @@ const LandingPage = () => {
             {userChecked && <div className="register-screen min-h-screen flex flex-col items-center justify-center">
                 {/* <h1 className="text-4xl font-bold mb-8">Fun Chat</h1> */}
                 <div className='form-input flex flex-col items-center justify-center w-80 h-80 relative overflow-hidden '>
+                    <div className='username-cont relative'>
                     <input
                         type="text"
                         value={userName}
@@ -88,7 +89,8 @@ const LandingPage = () => {
                         className="username px-4 py-2 mb-4 text-white"
                         placeholder="Enter you user name"
                     />
-
+                    <span className='custom-border'></span>
+                    </div>
                     <button
                         className="register bg-transparent border-2 hover:bg-green-400 border-green-400 text-white py-2 px-6 rounded-full"
                         onClick={handleRegisterClick}
