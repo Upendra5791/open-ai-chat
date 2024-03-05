@@ -184,7 +184,7 @@ const Chat = () => {
             </div>
             <div className="chat-input p-4 flex items-center text-black relative">
                 {displayAssistantWidget &&
-                    <div className='cursor-pointer assistant text-red-500 h-10 w-10 grid place-items-center text-2xl'
+                    <div className='cursor-pointer assistant h-10 w-10 grid place-items-center text-2xl'
                         onClick={toggleAssistant}
                     >
                         <SiGoogleassistant />

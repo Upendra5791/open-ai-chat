@@ -25,12 +25,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
+  /* background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)); */
+    background-color: #0b111f;
+    overscroll-behavior: none;
+    overflow: hidden;
 }
 
 @layer utilities {
@@ -102,13 +105,17 @@ code {
   height: calc(100% - 60px);
 }
 
+.assistant {
+color: #00ff9d;
+}
+
 .chat-assistant {
   width: calc(100% - 135px);
   height: 260px;
   position: absolute;
   background-color: #0b111f;
   bottom: 65px;
-  border: 2px solid red;
+  border: 2px solid #00ff9d;
   padding: 20px;
   /* left: 50%; */
   border-radius: 20px;
@@ -146,10 +153,27 @@ code {
   border-bottom: 2px solid #00ff9d;
   text-align: center;
   transition: 0.2s ease;
+  position: relative;
 }
 
 .register-screen .username:focus {
   outline: none;
+}
+
+.register-screen .username:focus + span:after {
+  transform: scaleX(1);
+}
+
+.register-screen .custom-border::after {
+  content: '';
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background-color: #00ff9d;
+  bottom: 16px;
+  left: 0;
+  transform: scaleX(0);
+  transition: 0.3s ease;
 }
 
 .register-screen .register {
