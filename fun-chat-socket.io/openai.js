@@ -1,5 +1,6 @@
 const OpenAI = require('openai');
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
 /*
 content: `You are a helpful chat assistant in a Chat application. Translate the user provided message to ${language}. Correct the text before translating if any grammatical error exists. Only return the translated message after translation. If unable to translate then return message - Unable to Translate. Sample input: Where do you live? Expected Output: तपाईं कहाँ बस्नुहुन्छ?`,
  */
