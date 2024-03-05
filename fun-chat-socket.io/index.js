@@ -10,6 +10,7 @@ const io = socketIo(server, {
   },
 });
 const openai = require("./openai");
+require('dotenv').config();
 
 // Store mapping of user IDs to socket IDs
 const userSocketMap = {};
