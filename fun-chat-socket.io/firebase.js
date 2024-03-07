@@ -21,6 +21,10 @@ const firebaseConfig = {
 let dbRef;
 let userMap = {};
 
+const dbPath = () => {
+  return process.env.PRODUCTION === 'true' ? 'prod/users/' : 'dev/users/' 
+}
+
 const connect = () => {
   initializeDB().then(
     (res) => {
@@ -34,7 +38,7 @@ const connect = () => {
 };
 
 const listenForUserUpdates = () => {
-  const usersRef = ref(getDatabase(), "users/");
+  const usersRef = ref(getDatabase(), dbPath());
   onValue(usersRef, (snapshot) => {
     const data = snapshot.val();
     userMap = data || {};
@@ -61,7 +65,7 @@ const writeUserData = (user) => {
   return new Promise((resolve, reject) => {
     try {
       const db = getDatabase();
-      set(ref(db, "users/" + user.id), user);
+      set(ref(db, dbPath() + user.id), user);
       resolve();
     } catch (e) {
       reject("Error regitering user!");
@@ -84,7 +88,7 @@ const fetchUsers = () => {
 
 const fetchUser = (userId) => {
   return new Promise((resolve) => {
-    get(child(dbRef, `users/${userId}`))
+    get(child(dbRef, `dbPath()${userId}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
           resolve(snapshot.val());
