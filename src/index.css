@@ -32,8 +32,8 @@ body {
     )
     rgb(var(--background-start-rgb)); */
     background-color: #0b111f;
-    overscroll-behavior: none;
-    overflow: hidden;
+    /* overscroll-behavior: none;
+    overflow: hidden; */
 }
 
 @layer utilities {
