@@ -21,7 +21,10 @@ function App() {
   // if new user detected in app state connect to socket and register the user to the socket
   const connectUserToSocket = () => {
     if (socket.disconnected) {
-      socket.auth = { userId: user.id };
+      socket.auth = { 
+        userId: user.id,
+        assistant: user.assistant
+       };
       socket.connect();
     }
     socket?.emit('socket_check', user, (response: any) => {
@@ -47,15 +50,15 @@ function App() {
   const DEFAULT_AI_SENDER_ID = 'open-ai-v1';
   const greetUser = () => {
     if (!!user && !!Object.keys(user).length) {
-        socket.emit('greet_user', {
-            senderId: user.id,
-            recipientId: DEFAULT_AI_SENDER_ID,
-            user: user
-        });
+      socket.emit('greet_user', {
+        senderId: user.id,
+        recipientId: DEFAULT_AI_SENDER_ID,
+        user: user
+      });
     }
-}
+  }
 
-    // retrieve the user from DB and update the app state.
+  // retrieve the user from DB and update the app state.
   const getUser = () => {
     getUserFromIndexedDB()
       .then((users: User[]) => {
@@ -78,11 +81,11 @@ function App() {
       connectUserToSocket();
       getChats();
     }
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <>
-{/*       <div className='absolute flex space-between z-50'>
+      {/*       <div className='absolute flex space-between z-50'>
         <button onClick={() => socket.connect()} className='bg-blue-500 rounded mx-2 p-1 text-sm'> Connect </button>
         <button onClick={() => socket.disconnect()} className='bg-blue-500 rounded mx-2 p-1 text-sm'> Disconnect </button>
       </div> */}

@@ -3,7 +3,8 @@ import { socket } from "./utils/socket";
 import { Chat, RecieveMessageResponse, addChat, addNewMessage } from "./store/ChatsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store/store";
-import { addChatToIndexedDB, addMessageToChat } from "./utils/indexedDB";
+import { addChatToIndexedDB, addMessageToChat, updateUserToIndexedDB } from "./utils/indexedDB";
+import { Assistant, updateUser } from "./store/UserSlice";
 // const DEFAULT_AI_CHAT_ID = 'ai-chat';
 const DEFAULT_AI_SENDER_ID = 'open-ai-v1';
 
@@ -81,14 +82,34 @@ export const SocketMessageHandler = () => {
 
             }
         }
+        const handleAssistantUpdate = (assistant: Assistant) => {
+            const updatedUser = {
+                ...user,
+                assistant: assistant 
+            };
+            updateUserToIndexedDB(updatedUser)
+            .then(() => {
+                console.log('User saved to IndexedDB');
+                dispatch(updateUser(updatedUser));
+            })
+            .catch((error: any) => {
+                console.error('Error saving user to IndexedDB:', error);
+            });
+        } 
     
         socket.on('connect', onConnect);
         socket.on('disconnect', onDisconnect);
         socket.on('receive_message', handleReceiveMessage);
+        socket.on('assistant_update', handleAssistantUpdate);
+        // only for dev
+        socket.onAny((eventName, ...args) => {
+           console.log(eventName, socket);
+          });
         return () => {
           socket.off('connect', onConnect);
           socket.off('disconnect', onDisconnect);
           socket.off('receive_message', handleReceiveMessage);
+          socket.off('assistant_update', handleAssistantUpdate);
         };
       }, [chats, user, dispatch]);
 

@@ -3,7 +3,13 @@ import { createSlice } from '@reduxjs/toolkit'
 export type User = {
     name: string,
     socketId: string,
-    id: string
+    id: string,
+    assistant?: Assistant
+}
+
+export type Assistant = {
+    assistantId: string,
+    threadId: string
 }
 
 const initialState: User = {} as User;
@@ -15,7 +21,8 @@ export const userSlice = createSlice({
         updateUser: (state, { payload }: { payload: User }) => {
             state.id = payload.id;
             state.name = payload.name;
-            state.socketId = payload.socketId
+            state.socketId = payload.socketId;
+            state.assistant = payload.assistant;
         }
     },
 })
