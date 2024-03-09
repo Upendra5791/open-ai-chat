@@ -142,6 +142,12 @@ const Chat = () => {
         }
     }
 
+    const getChatHtml = (text: string) => {
+        return {
+            __html: text
+        }
+    }
+
     return (
         <div className="flex flex-col h-screen" onClick={hideAssistant}>
             <div className="flex flex-col absolute w-full">
@@ -169,7 +175,8 @@ const Chat = () => {
                                             <p className='text-xs'>{getInitial(message)}</p>
                                         </div>}
                                         <div className="chat-message rounded-lg p-3 max-w-96 text-sm">
-                                            <p>{message.text}</p>
+                                            <div className='whitespace-pre text-wrap' 
+                                            dangerouslySetInnerHTML={getChatHtml(message.text)}></div>
                                             <p className='text-xs text-gray-400 text-right'>{getDisplayTime(message.time)}</p>
                                         </div>
                                         {isMessageSelf(message) && <div className='sender-indicator rounded-full bg-slate-800 self-end ml-2'>

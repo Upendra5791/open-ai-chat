@@ -75,7 +75,7 @@ const writeUserData = (user) => {
 
 const fetchUsers = () => {
   return new Promise((resolve) => {
-    get(child(dbRef, "users"))
+    get(child(dbRef, dbPath()))
       .then((snapshot) => {
         resolve(snapshot.exists() ? Object.values(snapshot.val()) : []);
       })
