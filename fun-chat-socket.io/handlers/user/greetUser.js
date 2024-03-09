@@ -1,3 +1,5 @@
+const { threadId } = require("worker_threads");
+
 const assistantUser = {
   id: "open-ai-v1",
   socketId: "open-ai-v1",
@@ -5,34 +7,42 @@ const assistantUser = {
 };
 
 const greetUser = ({ io, socket, db, openai }) => {
-  return ({ user }) => {
+  return async ({ user }) => {
     try {
-      console.log(user);
-      const senderSocketId = db.getUserMap()[user.id]?.socketId;
-      const initMessage = {
-        text: `Hi, I am ${user.name}`,
+      const assistant = await openai.createAssistant(socket);
+      const thread = await openai.createThread(socket);
+      const message = {
+        role: "user",
+        text: `Hi, I my name is ${user.name}`,
       };
-      openai.postMessageToAI(initMessage).then(
-        (res) => {
-          const assistantMessage = {
-            text: res,
-            time: new Date().toString(),
-            senderId: "open-ai-v1",
-            recipientId: user.id,
-          };
-          io.to(senderSocketId).emit("receive_message", {
-            sender: assistantUser,
-            message: assistantMessage,
-          });
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
+      const senderSocketId = db.getUserMap()[user.id]?.socketId;
+      io.to(senderSocketId).emit("assistant_update", {
+        assistantId: assistant.id,
+        threadId: thread.id
+      });
+      const generatedMessage = await openai.postMessageToAI({
+        socket,
+        message,
+      });
+      postMessagetoUser({ io, db, user, generatedMessage });
     } catch (e) {
       console.log("Error Greeting the user!");
     }
   };
+};
+
+const postMessagetoUser = ({ io, db, user, generatedMessage }) => {
+  const assistantMessage = {
+    text: generatedMessage,
+    time: new Date().toString(),
+    senderId: "open-ai-v1",
+    recipientId: user.id,
+  };
+  const senderSocketId = db.getUserMap()[user.id]?.socketId;
+  io.to(senderSocketId).emit("receive_message", {
+    sender: assistantUser,
+    message: assistantMessage,
+  });
 };
 
 module.exports = { greetUser };

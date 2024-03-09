@@ -9,7 +9,10 @@ const sendMessage = ({ io, socket, db, openai }) => {
     const senderSocketId = db.getUserMap()[senderId]?.socketId;
     if (recipientId === "open-ai-v1") {
       openai
-        .postMessageToAI(message)
+        .postMessageToAI({
+          socket,
+          message,
+        })
         .then((res) => {
           const assistantMessage = {
             text: res,

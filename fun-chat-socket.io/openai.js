@@ -14,7 +14,7 @@ const MAX_TOKEN_LIMIT = 500;
 
 const connect = () => {
   openai = new OpenAI({
-    apiKey: OPENAI_API_KEY,
+    apiKey: OPENAI_API_KEY
   });
   console.log("Connected to OpenAI");
 };
@@ -44,29 +44,67 @@ const translateMessage = async ({ message, language }) => {
   });
 };
 
-const postMessageToAI = (message) => {
+const postMessageToAI = ({socket, message}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const chatCompletion = await openai.chat.completions.create({
-        messages: [
-          { role: "user", content: message.text },
-          {
-            role: "system",
-            content: prompts.chatAssistant,
-          },
-        ],
-        max_tokens: MAX_TOKEN_LIMIT,
-        model: "gpt-3.5-turbo",
-        temperature: 1,
+      // create a message
+      await openai.beta.threads.messages.create(socket.threadId, {
+        role: "user",
+        content: message.text,
       });
-      resolve(chatCompletion.choices[0].message.content || "");
+      // run the assistant to process the message
+      const newRun = await openai.beta.threads.runs.create(
+        socket.threadId, {
+          assistant_id: socket.assistantId
+        }
+      );
+      // poll the run job to check if the run is complete
+      const runInterval = setInterval(async () => {
+        const run = await openai.beta.threads.runs.retrieve(
+          socket.threadId,
+          newRun.id
+        );
+        if (run.status === 'completed') {
+          clearInterval(runInterval);
+          const messages = await openai.beta.threads.messages.list(
+            socket.threadId
+          );
+          resolve(messages.data[0].content[0].text.value);
+        } else if (!['queued', 'in_progress'].includes(run.status)) {
+          clearInterval(runInterval);
+        }
+      }, 500);
     } catch (e) {
-      if (e.status === 401) {
-        console.log("invalid_api_key");
-      }
       reject("Error Sending Message");
     }
   });
+}
+
+const createAssistant = async (socket) => {
+  return new Promise(async (resolve) => {
+    assistant = await openai.beta.assistants.create({
+      name: "Personal Assistant",
+      instructions: "You are a personal assistant.Be polite with the user.",
+      tools: [],
+      model: "gpt-3.5-turbo",
+    });
+    socket.assistantId = assistant.id;
+    resolve(assistant);
+  });
 };
 
-module.exports = { translateMessage, connect, postMessageToAI };
+const createThread = async (socket) => {
+  return new Promise(async resolve => {
+    const thread = await openai.beta.threads.create();
+    socket.threadId = thread.id;
+    resolve(thread);
+  })
+};
+
+module.exports = {
+  translateMessage,
+  connect,
+  postMessageToAI,
+  createAssistant,
+  createThread
+};

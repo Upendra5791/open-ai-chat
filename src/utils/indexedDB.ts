@@ -194,6 +194,39 @@ export const saveUserToIndexedDB = (key: string, value: any) => {
     });
 };
 
+export const updateUserToIndexedDB = (user: User) => {
+  return new Promise<void>((resolve, reject) => {
+      const request = window.indexedDB.open('fun_chat_user_db', 1);
+      request.onerror = (event: any) => {
+          reject(event.target.errorCode);
+      };
+      request.onsuccess = (event: any) => {
+          const db = event.target.result;
+          const transaction = db.transaction(['users'], 'readwrite');
+          const objectStore = transaction.objectStore('users');
+          const request = objectStore.get(user.id);
+          request.onsuccess = (event: any) => {
+            const data: User = event.target.result;
+            data.assistant = user.assistant;
+            const requestUpdate = objectStore.put(data);
+            requestUpdate.onerror = (event: any) => {
+              // Do something with the error
+            };
+            requestUpdate.onsuccess = (event: any) => {
+              // Success - the data is updated!
+            };
+            transaction.oncomplete = () => {
+              resolve();
+            };
+          };
+      };
+      request.onupgradeneeded = (event: any) => {
+          const db = event.target.result;
+          const objectStore = db.createObjectStore('users', { keyPath: 'name' });
+      };
+  });
+};
+
 export const getUserFromIndexedDB = () => {
     return new Promise<User[]>((resolve, reject) => {
         const request = window.indexedDB.open('fun_chat_user_db', 1);

@@ -7,8 +7,10 @@ const { greetUser } = require("./user/greetUser");
 
 const initEventHandlers = ({ io, db, openai }) => {
   io.on("connection", async (socket) => {
-    const userId = socket.handshake.auth.userId;
+    const {userId, assistant } = socket.handshake.auth;
     socket.userId = userId;
+    socket.assistantId = assistant?.assistantId;
+    socket.threadId = assistant?.threadId;
     console.log("new connection " + socket.id);
     if (
       db.getUserMap()[userId] &&
