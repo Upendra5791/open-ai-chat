@@ -21,14 +21,16 @@ const AssistantWidget = ({
     setLanguage: (val: string) => void,
 }) => {
 
+    const asistantStyles = assistantClass + ' absolute bg-slate-100 dark:bg-slate-900';
+
     return (
-        <div className={assistantClass}
-        onClick={expandAssistant}>
+        <div className={asistantStyles}
+            onClick={expandAssistant}>
             <input id="translate" type='checkbox' checked={translate} value='translate'
                 onChange={() => setTranslate(!translate)} />
-            <label htmlFor='translate' className={translate ? '' : 'text-slate-400'}>
+            <label htmlFor='translate'>
                 <span className='pl-2'>Translate your message to &nbsp;
-                    <select className='languages'
+                    <select className='languages text-center bg-slate-100 dark:bg-slate-900 border-bottom border-b-[2px] border-slate-900 dark:border-slate-100'
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}>
                         {
@@ -39,7 +41,6 @@ const AssistantWidget = ({
                     </select>
                     &nbsp; before sending</span>
             </label>
-
         </div>
     )
 
