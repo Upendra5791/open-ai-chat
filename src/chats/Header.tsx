@@ -28,9 +28,7 @@ const Header = () => {
 
     const saveChattoDB = (chat: Chat) => {
         addChatToIndexedDB(chat)
-            .then(() => {
-                console.log('User saved to IndexedDB');
-            })
+            .then()
             .catch(error => {
                 console.error('Error saving user to IndexedDB:', error);
             });

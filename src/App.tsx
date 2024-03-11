@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LandingPage from './landing-page/LandingPage';
@@ -9,14 +9,16 @@ import { User, updateUser } from './store/UserSlice';
 import { socket } from './utils/socket';
 import { SocketMessageHandler } from './SocketMessageHandler';
 import { getChatsFromIndexedDB, getUserFromIndexedDB } from './utils/indexedDB';
-import { AppState } from './store/store';
+import { getUser } from './store/UserSlice';
 import { addChat } from './store/ChatsSlice';
 import ProtectedRoute from './ProtectedRoute';
 import { Chat as IChat } from './store/ChatsSlice';
+import { AppState } from './store/store';
 
 function App() {
-  const user = useSelector((state: AppState) => state.user);
+  const user = useSelector((state: AppState) => getUser(state));
   const dispatch = useDispatch();
+  const intervalRef = useRef< NodeJS.Timer>();
 
   // if new user detected in app state connect to socket and register the user to the socket
   const connectUserToSocket = () => {
@@ -26,20 +28,29 @@ function App() {
         assistant: user.assistant
        };
       socket.connect();
+      socket?.emit('socket_check', user, (response: any) => {
+        if (response.status === 0) {
+          console.log('User registered with new Socket', socket.id);
+        }
+      });
     }
-    socket?.emit('socket_check', user, (response: any) => {
-      console.log(response.message);
-      if (response.status === 0) {
-        console.log('User registered with new Socket');
-      }
-    });
+  }
+
+  const pingServer = (): NodeJS.Timer => {
+    return setInterval(() => {
+      if (socket.disconnected) socket.connect();
+        socket?.emit('client_ping', user, (response: any) => {
+          if (response.status === 0) {
+            console.log(response.message, socket.id);
+          }
+        });
+    }, 5000);
   }
 
   // retrieve chats from DB and update the app state.
   const getChats = () => {
     getChatsFromIndexedDB()
       .then((chatsInDB: IChat[]) => {
-        console.log('Chats retrieved from IndexedDB:', chatsInDB);
         chatsInDB?.forEach((chat: any) => {
           dispatch(addChat(chat));
         });
@@ -59,11 +70,10 @@ function App() {
   }
 
   // retrieve the user from DB and update the app state.
-  const getUser = () => {
+  const fetchUser = () => {
     getUserFromIndexedDB()
       .then((users: User[]) => {
         if (users.length) {
-          console.log('User retrieved from IndexedDB:', users[0]);
           dispatch(updateUser(users[0]));
         }
       })
@@ -73,14 +83,18 @@ function App() {
   }
 
   useEffect(() => {
-    getUser();
+    fetchUser();
   }, []);
 
   useEffect(() => {
     if (!!user && !!Object.keys(user).length) {
       connectUserToSocket();
       getChats();
+      // intervalRef.current = pingServer();
     }
+    // return () => {
+    //   clearInterval(intervalRef.current);
+    // }
   }, [user?.id]);
 
   return (

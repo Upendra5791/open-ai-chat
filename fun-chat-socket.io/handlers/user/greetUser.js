@@ -20,6 +20,11 @@ const greetUser = ({ io, socket, db, openai }) => {
         assistantId: assistant.id,
         threadId: thread.id
       });
+      db.writeUserData({
+        ...db.getUserMap()[user.id],
+        assistantId: assistant.id,
+        threadId: thread.id
+      });
       const generatedMessage = await openai.postMessageToAI({
         socket,
         message,

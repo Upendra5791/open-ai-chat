@@ -5,6 +5,12 @@ const { sendMessageAI } = require("./message/sendMessageAI");
 const { searchUser } = require("./user/searchUser");
 const { greetUser } = require("./user/greetUser");
 
+const clientPing = ({ io, socket }) => {
+  return async (user, callback) => {
+    if (!socket.disconnected) callback({message: 'Connection Alive!', status: 0})
+  }
+}
+
 const initEventHandlers = ({ io, db, openai }) => {
   io.on("connection", async (socket) => {
     const {userId, assistant } = socket.handshake.auth;
@@ -19,11 +25,14 @@ const initEventHandlers = ({ io, db, openai }) => {
       db.writeUserData({
         ...db.getUserMap()[userId],
         socketId: socket.id,
+        assistantId: socket.assistantId,
+        threadId: socket.threadId
       });
     }
 
     socket.on("socket_check", socketCheck({ io, socket, db, openai }));
     socket.on("chat_register", registerChat({ io, socket, db, openai }));
+    socket.on("client_ping", clientPing({ io, socket }));
     socket.on("send_message", sendMessage({ io, socket, db, openai }));
     socket.on("send_message_ai", sendMessageAI({ io, socket, db, openai }));
     socket.on("search", searchUser({ io, socket, db, openai }));

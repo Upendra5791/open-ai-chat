@@ -35,7 +35,7 @@ export const SocketMessageHandler = () => {
 
     useEffect(() => {
         const onConnect = () => {
-          console.log('Socket Connected!');
+          console.log('Socket Connected!', socket.id);
         //   socket?.emit('chat_register', user, (response: any) => {
         //     console.log(response.message);
         //     if (response.status === 0) {
@@ -43,8 +43,10 @@ export const SocketMessageHandler = () => {
         //     }
         //   });
         }
-        const onDisconnect = () => {
-          console.log('Socket Disconnected!');
+        const onDisconnect = (e: any) => {
+          console.log('Socket Disconnected! ', e);
+          socket.connect();
+        //   window.location.href = '';
         }
         const handleReceiveMessage = (response: RecieveMessageResponse) => {
             const existingChat = chats.find(f => f.recipientId === response.sender.id);
@@ -102,10 +104,11 @@ export const SocketMessageHandler = () => {
         socket.on('receive_message', handleReceiveMessage);
         socket.on('assistant_update', handleAssistantUpdate);
         // only for dev
-        socket.onAny((eventName, ...args) => {
+        /* socket.onAny((eventName, ...args) => {
            console.log(eventName, socket);
-          });
+          }); */
         return () => {
+          console.log('SocketMessageHandler unsubscribe');
           socket.off('connect', onConnect);
           socket.off('disconnect', onDisconnect);
           socket.off('receive_message', handleReceiveMessage);

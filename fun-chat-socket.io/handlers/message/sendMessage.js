@@ -35,7 +35,7 @@ const sendMessage = ({ io, socket, db, openai }) => {
       // Forward message to recipient
       const recipientSocketId = db.getUserMap()[recipientId]?.socketId;
       if (recipientSocketId) {
-        console.log(message);
+        console.log(`${message.text} from ${recipientId} to ${senderId}`);
         const sender = db.getUserMap()[senderId];
         io.to(recipientSocketId).emit("receive_message", {
           sender,

@@ -68,7 +68,7 @@ const writeUserData = (user) => {
       set(ref(db, dbPath() + user.id), user);
       resolve();
     } catch (e) {
-      reject("Error regitering user!");
+      reject("Error registering user!", e);
     }
   });
 };

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { AppState } from './store'
 
 export type User = {
     name: string,
@@ -28,6 +29,8 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { updateUser } = userSlice.actions
+export const { updateUser } = userSlice.actions;
+
+export const getUser = (state: AppState) => state.user;
 
 export default userSlice.reducer

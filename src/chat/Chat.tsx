@@ -70,6 +70,7 @@ const Chat = () => {
             message: newMessage,
             chat: chat
         }));
+        if (!socket.connected) socket.connect();
         socket.emit('send_message', {
             senderId: chat?.senderId,
             recipientId: chat?.recipientId,
