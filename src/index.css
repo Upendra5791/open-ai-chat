@@ -24,14 +24,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: rgb(var(--foreground-rgb));
+  /* color: rgb(var(--foreground-rgb)); */
   /* background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-    background-color: #0b111f;
+    /* background-color: #0b111f; */
     overscroll-behavior: none;
     overflow: hidden;
 }
@@ -76,6 +76,29 @@ select {
   /* box-shadow: 2px 2px 8px -3px #6c7791; */
 }
 
+.sender .chat-message:after {
+  content: '';
+  position: absolute;
+  height: 14px;
+  width: 24px;
+  background: #462580;
+  right: -6px;
+  bottom: 0px;
+  border-radius: 0px 51px 0px 51px;
+  transform: rotate(0deg);
+}
+.reciever .chat-message:after {
+  content: '';
+  position: absolute;
+  height: 14px;
+  width: 24px;
+  background: #6d1d83;
+  left: -8px;
+  bottom: 0px;
+  border-radius: 0px 51px 0px 51px;
+  transform: rotate(326deg);
+}
+
 .chat-input textarea {
   resize: none;
   /* border-radius: 0.25rem 0 0 0.25rem; */
@@ -97,17 +120,12 @@ select {
 /* .new-search-bar input.show {
   width: 100%;
 } */
-.new-search-bar input {
-  background-color: #232c41;
-}
 .new-search-bar .close {
  top: 50%;
  transform: translateY(-50%) rotate(45deg);
 }
 
 .search-results {
-  background-color: #0b111f;
-  /* margin-left: -16px; */
   top: 60px;
   height: calc(100% - 60px);
 }
@@ -119,8 +137,6 @@ color: #00ff9d;
 .chat-assistant {
   width: calc(100% - 135px);
   height: 260px;
-  position: absolute;
-  background-color: #0b111f;
   bottom: 65px;
   border: 2px solid #00ff9d;
   padding: 20px;
@@ -141,9 +157,6 @@ color: #00ff9d;
 }
 
 .chat-assistant .languages {
-  background: #0b111f;
-    color: inherit;
-    border-bottom: 1px solid white;
     padding: 2px 2px 0 2px;
 }
 
@@ -196,4 +209,38 @@ transform: translateY(50px);
 .register-screen .error.show {
 opacity: 1;
 transform: translateY(0);
+  }
+
+
+  .ball {
+    height: 5px; width: 5px;
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    left: 5px;
+    bottom: 0;
+    animation: bounce 1s ease infinite;
+  }
+
+  .ball:nth-of-type(2) {
+    left: 15px;
+    animation-delay: 0.3s;
+  }
+  .ball:nth-of-type(3) {
+    left: 25px;
+    animation-delay: 0.6s;
+  }
+
+
+
+  @keyframes bounce {
+    0% {
+      bottom: 0px
+    }
+    50% {
+      bottom: 5px
+    }
+    100% {
+      bottom: 0px
+    }
   }

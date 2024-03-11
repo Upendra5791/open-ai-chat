@@ -118,7 +118,6 @@ export const getChatsFromIndexedDB = () => {
             db.transaction("chats")
                 .objectStore("chats")
                 .getAll().onsuccess = ((event: any) => {
-                    console.log(`Name for SSN 444-44-4444 is ${event.target.result}`);
                     resolve(event.target.result);
                 });
            /*  const transaction = db.transaction(['chats'], 'readonly');
@@ -149,7 +148,6 @@ export const getChatFromIndexedDB = (chat: Chat) => {
           db.transaction("chats")
               .objectStore("chats")
               .get(chat.id).onsuccess = ((event: any) => {
-                  console.log(`Chat is ${event.target.result}`);
                   resolve(event.target.result);
               });
          /*  const transaction = db.transaction(['chats'], 'readonly');

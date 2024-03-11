@@ -78,7 +78,7 @@ const LandingPage = () => {
 
     return (
         <>
-            {userChecked && <div className="register-screen min-h-screen flex flex-col items-center justify-center">
+            {userChecked && <div className="register-screen min-h-screen flex flex-col items-center justify-center bg-slate-900">
                 {/* <h1 className="text-4xl font-bold mb-8">Fun Chat</h1> */}
                 <div className='form-input flex flex-col items-center justify-center w-80 h-80 relative overflow-hidden '>
                     <div className='username-cont relative'>

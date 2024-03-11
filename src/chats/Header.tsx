@@ -28,9 +28,7 @@ const Header = () => {
 
     const saveChattoDB = (chat: Chat) => {
         addChatToIndexedDB(chat)
-            .then(() => {
-                console.log('User saved to IndexedDB');
-            })
+            .then()
             .catch(error => {
                 console.error('Error saving user to IndexedDB:', error);
             });
@@ -84,9 +82,9 @@ const Header = () => {
     return (
         <>
             <div className="flex flex-col relative">
-                <header className="flex justify-between items-center text-white p-4 relative sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-white supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75">
-                    <div className="text-xl font-bold">Chats</div>
-                    <div onClick={handleToggleSearchInput} className=' cursor-pointer h-8 w-8 grid place-items-center text-3xl text-white'>
+                <header className="flex justify-between items-center text-white p-4 relative sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-slate-900/10 dark:border-slate-50/[0.06] bg-slate-100/85 supports-backdrop-blur:bg-slate-100/85 dark:bg-slate-900/75">
+                    <div className="text-xl font-bold text-slate-900 dark:text-white">Chats</div>
+                    <div onClick={handleToggleSearchInput} className='cursor-pointer h-8 w-8 grid place-items-center text-3xl text-slate-900 dark:text-white'>
                         <IoAddCircleOutline />
                     </div>
                     {showSearchInput && (
@@ -96,12 +94,12 @@ const Header = () => {
                                 type="text"
                                 id="searchUser"
                                 placeholder="Search user"
-                                className={'w-full px-4 py-2 rounded-full focus:outline-none focus:ring focus:border-blue-300 text-white'}
+                                className={'w-full px-4 py-2 rounded-full focus:outline-none focus:ring focus:border-blue-300 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100'}
                                 value={searchText}
                                 onChange={handleSearchInputChange}
                             />
                             <div onClick={handleClearSearch}
-                                className='cursor-pointer h-10 w-10 close absolute right-1 grid place-items-center text-3xl text-white'>
+                                className='cursor-pointer h-10 w-10 close absolute right-1 grid place-items-center text-3xl text-slate-900 dark:text-slate-100'>
                                 <IoAddCircleOutline />
                             </div>
                         </div>
@@ -109,10 +107,10 @@ const Header = () => {
                 </header>
             </div>
             {showSearchInput && (
-                <div className="search-results absolute top-full bg-white w-full shadow-lg h-fit">
+                <div className="search-results absolute top-full w-full shadow-lg h-fit bg-slate-100 dark:bg-slate-900">
                     {searchResults.map((result, index) => (
                         <div key={index} onClick={() => handleSearchResultsClick(result)}
-                            className="px-4 py-2 cursor-pointer hover:bg-gray-900">
+                            className="px-4 py-4 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300">
                             {result.name}
                         </div>
                     ))}
