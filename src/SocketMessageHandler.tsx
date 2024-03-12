@@ -87,7 +87,8 @@ export const SocketMessageHandler = () => {
         const handleAssistantUpdate = (assistant: Assistant) => {
             const updatedUser = {
                 ...user,
-                assistant: assistant 
+                assistantId: assistant.assistantId,
+                threadId: assistant.threadId
             };
             updateUserToIndexedDB(updatedUser)
             .then(() => {
@@ -104,9 +105,9 @@ export const SocketMessageHandler = () => {
         socket.on('receive_message', handleReceiveMessage);
         socket.on('assistant_update', handleAssistantUpdate);
         // only for dev
-        /* socket.onAny((eventName, ...args) => {
+        socket.onAny((eventName, ...args) => {
            console.log(eventName, socket);
-          }); */
+          });
         return () => {
           console.log('SocketMessageHandler unsubscribe');
           socket.off('connect', onConnect);

@@ -1,7 +1,7 @@
 const sendMessageAI = ({ io, socket, db, openai }) => {
   return (data, callback) => {
     const { message, language } = data;
-    console.log(message);
+    console.log(message.text);
     openai
       .translateMessage({
         message,

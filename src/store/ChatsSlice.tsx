@@ -92,11 +92,21 @@ export const chatsSlice = createSlice({
           return chat
         }
       })
+    },
+    clearChat: (state, { payload }: {payload: { chat: Chat }}) => {
+      state.chats = state.chats.map((c: Chat) => {
+        if (c.id === payload.chat.id) {
+          return {
+            ...c,
+            messages: []
+          }
+        } else return c;
+      })
     }
   }
 });
 
 // Action creators are generated for each case reducer function
-export const { addChat, addNewMessage, setCurrentChat, updateMessageReadStatus } = chatsSlice.actions;
+export const { addChat, addNewMessage, setCurrentChat, updateMessageReadStatus, clearChat } = chatsSlice.actions;
 
 export default chatsSlice.reducer;

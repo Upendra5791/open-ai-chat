@@ -9,7 +9,12 @@ const assistantUser = {
 const greetUser = ({ io, socket, db, openai }) => {
   return async ({ user }) => {
     try {
-      const assistant = await openai.createAssistant(socket);
+      let assistant;
+      if (!socket.assistantId) {
+        assistant = await openai.createAssistant(socket);
+      } else {
+        assistant = {assistantId: socket.assistantId};
+      }
       const thread = await openai.createThread(socket);
       const message = {
         role: "user",

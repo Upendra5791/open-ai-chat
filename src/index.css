@@ -160,6 +160,33 @@ color: #00ff9d;
     padding: 2px 2px 0 2px;
 }
 
+.suggestions {
+  transition: 0.2s cubic-bezier(0.34, 0.73, 0.34, 0.76);
+  transform: translateY(calc(100% + 85px));
+  left: 7px;
+}
+
+.suggestions.show {
+  transform: translateY(15px);
+}
+
+.suggestions .prompt:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 78px;
+  border: 3px solid #00ff9d94;
+  top: 2px;
+  left: 9px;
+  border-radius: 10px;
+}
+
+.suggestions .prompt p {
+  background-color: #00ff9d;
+  padding-left: 20px;
+  /* box-shadow: 0px 0px 4px 1px #00ff9d8c; */
+}
+
 
 /* chats.tsx */
 .message {

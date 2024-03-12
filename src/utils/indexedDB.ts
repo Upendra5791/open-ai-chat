@@ -74,6 +74,43 @@ export const addMessageToChat = ({
   });
 };
 
+export const clearConversation = ({
+  chat,
+}: {
+  chat: Chat
+}) => {
+  return new Promise<void>((resolve, reject) => {
+    const request = window.indexedDB.open("fun_chat_chats_db", 1);
+    request.onerror = (event: any) => {
+      reject(event.target.errorCode);
+    };
+    request.onsuccess = (event: any) => {
+      const db = event.target.result;
+      const transaction = db.transaction(["chats"], "readwrite");
+      const objectStore = transaction.objectStore("chats");
+      const request = objectStore.get(chat.id);
+      request.onsuccess = (event: any) => {
+        const data: Chat = event.target.result;
+        data.messages = [];
+        const requestUpdate = objectStore.put(data);
+        requestUpdate.onerror = (event: any) => {
+          // Do something with the error
+        };
+        requestUpdate.onsuccess = (event: any) => {
+          // Success - the data is updated!
+        };
+        transaction.oncomplete = () => {
+          resolve();
+        };
+      };
+    };
+    request.onupgradeneeded = (event: any) => {
+      const db = event.target.result;
+      db.createObjectStore("chats", { keyPath: "id"});
+    };
+  });
+};
+
 export const resetUnreadMessageCount = (chat: Chat) => {
     return new Promise<void>((resolve, reject) => {
       const request = window.indexedDB.open("fun_chat_chats_db", 1);
@@ -204,8 +241,8 @@ export const updateUserToIndexedDB = (user: User) => {
           const objectStore = transaction.objectStore('users');
           const request = objectStore.get(user.id);
           request.onsuccess = (event: any) => {
-            const data: User = event.target.result;
-            data.assistant = user.assistant;
+            let data: User = event.target.result;
+            data = user;
             const requestUpdate = objectStore.put(data);
             requestUpdate.onerror = (event: any) => {
               // Do something with the error

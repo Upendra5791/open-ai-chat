@@ -14,6 +14,7 @@ import { addChat } from './store/ChatsSlice';
 import ProtectedRoute from './ProtectedRoute';
 import { Chat as IChat } from './store/ChatsSlice';
 import { AppState } from './store/store';
+import Settings from './settings/Settings';
 
 function App() {
   const user = useSelector((state: AppState) => getUser(state));
@@ -25,7 +26,8 @@ function App() {
     if (socket.disconnected) {
       socket.auth = { 
         userId: user.id,
-        assistant: user.assistant
+        assistantId: user.assistantId,
+        threadId: user.threadId
        };
       socket.connect();
       socket?.emit('socket_check', user, (response: any) => {
@@ -110,6 +112,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/chats" element={<Chats />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
         </Routes>
