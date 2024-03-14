@@ -3,6 +3,7 @@ import { AppState } from '../store/store';
 import { Chat, setCurrentChat } from '../store/ChatsSlice';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
+import Footer from './Footer';
 
 const Chats = () => {
     const navigate = useNavigate();
@@ -55,6 +56,7 @@ const Chats = () => {
                 </div>
 
             </div>
+            <Footer />
         </div>
     );
 };

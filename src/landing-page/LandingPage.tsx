@@ -16,6 +16,7 @@ const LandingPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state: AppState) => state.user);
+    const [loading, setLoading] = useState(false);
 
     const saveUser = (newUser: User) => {
         saveUserToIndexedDB('user', newUser)
@@ -36,6 +37,7 @@ const LandingPage = () => {
         socket.connect();
         socket.emit('chat_register', user, (response: any) => {
             console.log(response.message);
+            setLoading(false);
             if (response.status === 0) {
                 const newUser = {
                     name: userName,
@@ -64,6 +66,7 @@ const LandingPage = () => {
             id: uniqueID,
             name: userName
         }
+        setLoading(true);
         registerChatToSocket(user);
     };
 
@@ -78,7 +81,9 @@ const LandingPage = () => {
 
     return (
         <>
-            {userChecked && <div className="register-screen min-h-screen flex flex-col items-center justify-center bg-slate-900">
+            {userChecked && 
+             <div className='register-screen min-h-screen flex flex-col items-center justify-center relative bg-slate-900 bg-gradient-to-b from-slate-900 to-slate-950'>
+               <div className={`absolute h-screen w-full bg-slate-900 opacity-0 transition duration-1000 ${loading ? 'opacity-100 z-40': ''}`}></div> 
                 {/* <h1 className="text-4xl font-bold mb-8">Fun Chat</h1> */}
                 <div className='form-input flex flex-col items-center justify-center w-80 h-80 relative overflow-hidden '>
                     <div className='username-cont relative'>
@@ -87,7 +92,7 @@ const LandingPage = () => {
                         value={userName}
                         onChange={handleInputChange}
                         className="username px-4 py-2 mb-4 text-white"
-                        placeholder="Enter you user name"
+                        placeholder="Enter your user name"
                     />
                     <span className='custom-border'></span>
                     </div>

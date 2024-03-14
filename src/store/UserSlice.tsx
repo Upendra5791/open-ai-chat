@@ -5,7 +5,8 @@ export type User = {
     name: string,
     socketId: string,
     id: string,
-    assistant?: Assistant
+    assistantId?: string,
+    threadId?: string
 }
 
 export type Assistant = {
@@ -23,7 +24,8 @@ export const userSlice = createSlice({
             state.id = payload.id;
             state.name = payload.name;
             state.socketId = payload.socketId;
-            state.assistant = payload.assistant;
+            state.assistantId = payload.assistantId;
+            state.threadId = payload.threadId;
         }
     },
 })

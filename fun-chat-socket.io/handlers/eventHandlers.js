@@ -13,10 +13,10 @@ const clientPing = ({ io, socket }) => {
 
 const initEventHandlers = ({ io, db, openai }) => {
   io.on("connection", async (socket) => {
-    const {userId, assistant } = socket.handshake.auth;
+    const { userId, assistantId, threadId } = socket.handshake.auth;
     socket.userId = userId;
-    socket.assistantId = assistant?.assistantId;
-    socket.threadId = assistant?.threadId;
+    socket.assistantId = assistantId;
+    socket.threadId = threadId;
     console.log("new connection " + socket.id);
     if (
       db.getUserMap()[userId] &&
@@ -37,6 +37,9 @@ const initEventHandlers = ({ io, db, openai }) => {
     socket.on("send_message_ai", sendMessageAI({ io, socket, db, openai }));
     socket.on("search", searchUser({ io, socket, db, openai }));
     socket.on("greet_user", greetUser({ io, socket, db, openai }));
+    socket.onAny((eventName, ...args) => {
+      console.log(eventName, socket.id);
+     });
 
     // Disconnect event
     socket.on("disconnect", (r) => {
