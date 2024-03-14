@@ -12,6 +12,7 @@ import AssistantWidget from './AssistantWidget';
 import AssistantPrompts from './AssistantPrompts';
 import Typing from './Typing';
 import Message from './Message';
+import { getUniqueID } from '../utils/uid';
 
 const DEFAULT_AI_SENDER_ID = 'open-ai-v1';
 export type AssistantPrompt = {
@@ -112,6 +113,7 @@ const Chat = () => {
         if (!messageLoading && inputMessage.trim() !== '') {
             setMessageLoading(true);
             const newMessage: IMessage = {
+                id: getUniqueID(),
                 text: inputMessage,
                 time: new Date().toString(),
                 senderId: chat?.senderId,
@@ -153,6 +155,7 @@ const Chat = () => {
 
     const selectPrompt = (p: AssistantPrompt) => {
         const newMessage: IMessage = {
+            id: getUniqueID(),
             text: p.prompt,
             time: new Date().toString(),
             senderId: chat?.senderId,

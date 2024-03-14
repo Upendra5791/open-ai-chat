@@ -7,7 +7,7 @@ export const initializeChatDB = () => {
         const db = event.target.result;
       
         // Create another object store called "names" with the autoIncrement flag set as true.
-        const objStore = db.createObjectStore("chats", { keyPath: "id"});
+        db.createObjectStore("chats", { keyPath: "id"});
       };
 }
 
@@ -224,7 +224,7 @@ export const saveUserToIndexedDB = (key: string, value: any) => {
         };
         request.onupgradeneeded = (event: any) => {
             const db = event.target.result;
-            const objectStore = db.createObjectStore('users', { keyPath: 'name' });
+            db.createObjectStore('users', { keyPath: 'name' });
         };
     });
 };
@@ -257,7 +257,7 @@ export const updateUserToIndexedDB = (user: User) => {
       };
       request.onupgradeneeded = (event: any) => {
           const db = event.target.result;
-          const objectStore = db.createObjectStore('users', { keyPath: 'name' });
+          db.createObjectStore('users', { keyPath: 'name' });
       };
   });
 };

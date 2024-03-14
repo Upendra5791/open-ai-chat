@@ -18,10 +18,10 @@ const Message = ({
         return (message.senderId === user.id);
     }
 
-    const getInitial = (message: IMessage) => {
+/*     const getInitial = (message: IMessage) => {
         const name = isMessageSelf(message) ? user.name : chat?.recipientName
         return name?.charAt(0).toUpperCase();
-    }
+    } */
     const getChatHtml = (text: string) => {
         return {
             __html: text

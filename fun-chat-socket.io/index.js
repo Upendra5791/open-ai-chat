@@ -15,7 +15,7 @@ const io = socketIo(server, {
       "https://chat-open-ai-ab0d4.web.app",
       "https://chat-open-ai-ab0d4.firebaseapp.com",
     ],
-  },
+  }
 });
 
 server.listen(4000, () => {

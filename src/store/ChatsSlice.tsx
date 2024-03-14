@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { User } from "./UserSlice";
+import { getUniqueID } from "../utils/uid";
 
 export type RecieveMessageResponse = {
  sender: User,
@@ -7,10 +8,12 @@ export type RecieveMessageResponse = {
 }
 
 export type Message = {
+  id: string;
   text: string;
   time: string;
   senderId: string | undefined;
   recipientId: string | undefined;
+  status?: 'PENDING' | 'DELIVERED'
 }
 
 export type Chat = {
@@ -40,6 +43,7 @@ export const aiChatInit: Chat = {
   socketId: 'open-ai-v1',
   unreadMessageCount: 1,
   messages: [{
+    id: getUniqueID(),
     text: 'Hi there, how can I help you?',
     time: new Date().toString(),
     senderId: 'open-ai-v1',

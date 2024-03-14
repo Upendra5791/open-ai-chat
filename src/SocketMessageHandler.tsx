@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store/store";
 import { addChatToIndexedDB, addMessageToChat, updateUserToIndexedDB } from "./utils/indexedDB";
 import { Assistant, updateUser } from "./store/UserSlice";
-// const DEFAULT_AI_CHAT_ID = 'ai-chat';
 const DEFAULT_AI_SENDER_ID = 'open-ai-v1';
 
 export const SocketMessageHandler = () => {
@@ -29,26 +28,15 @@ export const SocketMessageHandler = () => {
     //     greetUser()
     // }, [user]);
 
-    const addMessageToDB = () => {
-
-    }
-
     useEffect(() => {
         const onConnect = () => {
           console.log('Socket Connected!', socket.id);
-        //   socket?.emit('chat_register', user, (response: any) => {
-        //     console.log(response.message);
-        //     if (response.status === 0) {
-        //       console.log('User registered with new Socket');
-        //     }
-        //   });
         }
         const onDisconnect = (e: any) => {
           console.log('Socket Disconnected! ', e);
           socket.connect();
-        //   window.location.href = '';
         }
-        const handleReceiveMessage = (response: RecieveMessageResponse) => {
+        const handleReceiveMessage = (response: RecieveMessageResponse, callback: any) => {
             const existingChat = chats.find(f => f.recipientId === response.sender.id);
             if (!!existingChat) {
                 dispatch(addNewMessage({
@@ -83,6 +71,9 @@ export const SocketMessageHandler = () => {
                     });
 
             }
+            callback({
+                messageId: response.message.id
+            });
         }
         const handleAssistantUpdate = (assistant: Assistant) => {
             const updatedUser = {
