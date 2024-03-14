@@ -100,7 +100,7 @@ function App() {
   }, [user?.id]);
 
   return (
-    <div className='text-slate-900 dark:text-slate-400 bg-slate-100 dark:bg-slate-900'>
+    <div className='text-slate-900 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 overflow-hidden'>
       {/*       <div className='absolute flex space-between z-50'>
         <button onClick={() => socket.connect()} className='bg-blue-500 rounded mx-2 p-1 text-sm'> Connect </button>
         <button onClick={() => socket.disconnect()} className='bg-blue-500 rounded mx-2 p-1 text-sm'> Disconnect </button>

@@ -7,11 +7,11 @@ type AssistantPromptsProps = {
 
 const assistantPrompts = [
     {
-        id: 1, prompt: 'Tell me a joke in the style of Ricky Gervais.'
+        id: 1, prompt: 'Tell me a joke about AI'
     },
-    {
+/*     {
         id: 2, prompt: 'Answer with a British accent.'
-    },
+    }, */
     {
         id: 3, prompt: 'Reply in the language of my choice.',
         instructions: 'LANGUAGE_CHANGE_INSTRUCTION'
