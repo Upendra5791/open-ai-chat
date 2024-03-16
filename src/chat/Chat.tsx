@@ -112,6 +112,7 @@ const Chat = () => {
             recipientId: chat?.recipientId,
         }
         dispatch(sendMessage(chat, newMessage, p.instructions));
+        setShowIsTyping(true);
     }
 
     return (
@@ -126,7 +127,7 @@ const Chat = () => {
                     <div></div>
                 </header>
             </div>
-            <div className="flex-grow overflow-y-auto pb-[75px]">
+            <div className="flex-grow overflow-y-auto messages">
                 <div className="p-4 mt-12">
                     <ul ref={messageRef}>
                         {messages?.map((message) => <Message message={message} user={user} chat={chat} />)}

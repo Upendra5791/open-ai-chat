@@ -23,6 +23,8 @@ const initEventHandlers = ({ io, db, openai }) => {
     socket.userId = userId;
     if (assistantId) socket.assistantId = assistantId;
     if (threadId)  socket.threadId = threadId;
+    console.log(assistantId);
+    console.log(threadId);
     console.log("new connection " + socket.id + " " + userId);
 
     updateUserData({ io, socket, db, userId });

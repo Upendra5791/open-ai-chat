@@ -32,7 +32,7 @@ const Message = ({
     contClass += ' flex w-full';
 
     return (
-        <li key={message.time}
+        <li key={message.id}
             className="grid justify-items-stretch mb-2">
             <div className={contClass}>
                 {/* {!isMessageSelf(message) && <div className='sender-indicator rounded-full bg-slate-800 self-end mr-2 text-white'>

@@ -11,7 +11,7 @@ const getDisplayTime = (inputDate: string) => {
         hour = hour % 12 || 12;
         return `${hour}:${String(min).padStart(2, '0')} ${meridiam} `
     } else {
-        return `${date.getDay()}/${String(date.getMonth()).padStart(2, '0')}/${String(date.getFullYear()).padStart(2, '0')} `
+        return `${date.getDate()}/${String(date.getMonth()+1).padStart(2, '0')}/${String(date.getFullYear()).padStart(2, '0')} `
     }
 }
 

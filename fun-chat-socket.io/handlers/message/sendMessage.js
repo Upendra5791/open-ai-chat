@@ -97,6 +97,11 @@ const handleAssistantMessage = async ({
               }
             }
           );
+      }, (e) => {
+        io.to(senderSocketId).emit("receive_message", {
+          sender: assistantUser,
+          message: "Error generating Assistant Message --> " + e 
+        });
       })
       .catch((e) => {
         io.to(senderSocketId).emit("receive_message", {
