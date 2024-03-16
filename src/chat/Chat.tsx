@@ -116,7 +116,7 @@ const Chat = () => {
     }
 
     return (
-        <div className="flex flex-col h-screen" onClick={hideAssistant}>
+        <div className="flex flex-col h-screen overflow-hidden relative" onClick={hideAssistant}>
             <div className="flex flex-col absolute w-full">
                 <header className="flex justify-center items-center p-4 relative sticky top-0 z-40 w-full 
                 backdrop-blur-lg flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-slate-200/85 supports-backdrop-blur:bg-slate-100/85 dark:bg-slate-900/75">
