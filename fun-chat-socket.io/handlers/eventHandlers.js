@@ -21,8 +21,8 @@ const initEventHandlers = ({ io, db, openai }) => {
   io.on("connection", async (socket) => {
     const { userId, assistantId, threadId } = socket.handshake.auth;
     socket.userId = userId;
-    socket.assistantId = assistantId;
-    socket.threadId = threadId;
+    if (assistantId) socket.assistantId = assistantId;
+    if (threadId)  socket.threadId = threadId;
     console.log("new connection " + socket.id + " " + userId);
 
     updateUserData({ io, socket, db, userId });
@@ -87,13 +87,17 @@ const replayPendingMessages = ({ io, socket, db, userId }) => {
 };
 
 const updateUserData = ({ io, socket, db, userId }) => {
-  if (db.getUserMap()[userId]?.socketId !== socket.id) {
-    db.writeUserData({
+  if (
+    db.getUserMap()[userId] &&
+    db.getUserMap()[userId].socketId !== socket.id
+  ) {
+    const user = {
       ...db.getUserMap()[userId],
       socketId: socket.id,
-      assistantId: socket.assistantId,
-      threadId: socket.threadId,
-    });
+    };
+    if (socket.assistantId) user.assistantId = socket.assistantId;
+    if (socket.threadId)  user.threadId = socket.threadId;
+    db.writeUserData(user);
   }
 };
 

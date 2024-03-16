@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useUniqueId } from '../hooks/useUniqueID';
 import { useNavigate } from 'react-router-dom';
-import { User, updateUser } from '../store/UserSlice';
+import { User, saveUser } from '../store/UserSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../store/store';
-import { socket } from '../utils/socket';
-import { saveUserToIndexedDB } from '../utils/indexedDB';
+import { AppDispatch, AppState } from '../store/store';
+import { connectSocket, socket } from '../utils/socket';
 
 const LandingPage = () => {
     const [userId, setUserId] = useState<string>('');
@@ -14,27 +13,18 @@ const LandingPage = () => {
     const [userChecked, setUserChecked] = useState<boolean>(false);
     const uniqueID = useUniqueId(userName);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: AppState) => state.user);
     const [loading, setLoading] = useState(false);
 
-    const saveUser = (newUser: User) => {
-        saveUserToIndexedDB('user', newUser)
-            .then(() => {
-                console.log('User saved to IndexedDB');
-                // Dispatch updateUser action
-                dispatch(updateUser(newUser))
-                // Navigate to chat page
-                navigate('/chats');
-            })
-            .catch((error: any) => {
-                console.error('Error saving user to IndexedDB:', error);
-            });
+    const saveNewUser = async (user: User) => {
+        const newuser = await dispatch(saveUser(user));
+        if(newuser) navigate('/chats');
     }
 
     const registerChatToSocket = (user: any) => {
         socket.auth = { userId: user.id };
-        socket.connect();
+        connectSocket(user);
         socket.emit('chat_register', user, (response: any) => {
             console.log(response.message);
             setLoading(false);
@@ -44,7 +34,7 @@ const LandingPage = () => {
                     id: uniqueID,
                     socketId: response.socketId
                 }
-                saveUser(newUser)
+                saveNewUser(newUser)
             } else if (response.status === 3) {
                 setshowError(true);
             }
@@ -57,7 +47,7 @@ const LandingPage = () => {
         } else {
             setUserChecked(true);
         }
-    }, [user])
+    }, [user, navigate])
 
     const handleRegisterClick = () => {
         if (!userName.length) return;

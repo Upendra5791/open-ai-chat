@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { User } from "./UserSlice";
 import { getUniqueID } from "../utils/uid";
+import { AppDispatch } from "./store";
+import { addMessageToChat, clearConversation, getChatsFromIndexedDB, resetUnreadMessageCount } from "../utils/indexedDB";
+import { socket } from "../utils/socket";
+import { socket_sendMessage } from "./emitEvent";
 
 export type RecieveMessageResponse = {
  sender: User,
@@ -114,3 +118,53 @@ export const chatsSlice = createSlice({
 export const { addChat, addNewMessage, setCurrentChat, updateMessageReadStatus, clearChat } = chatsSlice.actions;
 
 export default chatsSlice.reducer;
+
+export const fetchChats = () => async (dispatch: AppDispatch) => {
+  const chatsInDB = await getChatsFromIndexedDB()
+  chatsInDB?.forEach((chat: any) => {
+    dispatch(addChat(chat));
+  });
+  return chatsInDB;
+};
+
+export const updateMessageStatus = (chat: Chat) => (dispatch: AppDispatch) => {
+    dispatch(updateMessageReadStatus({ chat }));
+    resetUnreadMessageCount(chat);
+}
+
+export const sendMessage = (chat: Chat, message: Message, instructions?: string) => (dispatch: AppDispatch) => {
+  if (instructions === 'CLEAR_THREAD_INSTRUCTION') {
+    dispatch(clearChat({ chat }));
+  } else {
+    dispatch(addNewMessage({
+      message,
+      chat
+    }));
+    dispatch(socket_sendMessage(chat, message, instructions));
+    // update the message to the DB
+    if (instructions === 'CLEAR_THREAD_INSTRUCTION') {
+      chat && clearConversation({ chat });
+    } else chat && addMessageToChat({
+      message,
+      chat
+    }).then(() => console.log('Message updated in DB'));
+  }
+}
+
+export const translateOutgoingMessage = (chat: Chat, message: Message, language: string) => (dispatch: AppDispatch) => {
+  translateMessage({ message, language })
+    .then(res => {
+      message.text = res;
+      dispatch(sendMessage(chat, message));
+    }, (err) => {
+      dispatch(sendMessage(chat, message));
+    });
+}
+
+const translateMessage = ({ message, language }: { message: Message, language: string }): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+      socket.emit('send_message_ai', { message, language }, (res: string) => {
+          resolve(res)
+      });
+  })
+}

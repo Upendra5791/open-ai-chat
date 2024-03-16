@@ -13,7 +13,7 @@ const greetUser = ({ io, socket, db, openai }) => {
       if (!socket.assistantId) {
         assistant = await openai.createAssistant(socket);
       } else {
-        assistant = { assistantId: socket.assistantId };
+        assistant = { id: socket.assistantId };
       }
       const thread = await openai.createThread(socket);
       const message = {
@@ -49,7 +49,7 @@ const postMessagetoUser = ({ io, db, user, generatedMessage }) => {
     senderId: "open-ai-v1",
     recipientId: user.id,
   };
-  db.addMessage(recipientId, {
+  db.addMessage(user.id, {
     ...assistantMessage,
     status: "PENDING",
   });
@@ -65,7 +65,7 @@ const postMessagetoUser = ({ io, db, user, generatedMessage }) => {
       async (err, res) => {
         if (res?.[0]?.messageId === assistantMessage.id) {  
           console.log('Removing message ' + assistantMessage.id );
-          await db.removeMessage(recipientId, assistantMessage);
+          await db.removeMessage(assistantMessage.recipientId, assistantMessage);
         }
       }
     );

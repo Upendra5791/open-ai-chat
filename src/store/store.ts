@@ -9,10 +9,12 @@ export type AppState = {
     theme: Theme
 }
 
-export default configureStore({
+const store =  configureStore({
   reducer: {
     chatsSlice: chatReducer,
     user: userReducer,
     theme: themeReducer
-  },
-})
+  }
+});
+export type AppDispatch = typeof store.dispatch;
+export default store;

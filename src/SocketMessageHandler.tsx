@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { socket } from "./utils/socket";
+import { connectSocket, socket } from "./utils/socket";
 import { Chat, RecieveMessageResponse, addChat, addNewMessage } from "./store/ChatsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store/store";
@@ -34,7 +34,13 @@ export const SocketMessageHandler = () => {
         }
         const onDisconnect = (e: any) => {
           console.log('Socket Disconnected! ', e);
-          socket.connect();
+            // const interval = window.setInterval(() => {
+			// 	if (socket.connected) {
+			// 		clearInterval(interval);
+            //         return;
+			// 	}
+			// 	connectSocket(user);
+			// }, 2000)
         }
         const handleReceiveMessage = (response: RecieveMessageResponse, callback: any) => {
             const existingChat = chats.find(f => f.recipientId === response.sender.id);

@@ -1,6 +1,7 @@
 
 import { Chat, Message as IMessage } from '../store/ChatsSlice';
 import { User } from '../store/UserSlice';
+import getDisplayTime from '../utils/displayTime';
 
 
 const Message = ({
@@ -29,23 +30,6 @@ const Message = ({
     }
     let contClass = isMessageSelf(message) ? 'justify-self-end justify-end sender' : 'justify-self-start justify-start reciever';
     contClass += ' flex w-full';
-
-    const getDisplayTime = (inputDate: string) => {
-        const today = new Date();
-        today.setHours(0);
-        today.setMinutes(0);
-        today.setSeconds(0);
-        const date = new Date(inputDate);
-        if (date.getTime() > today.getTime()) {
-            let hour = date.getHours();
-            const min = date.getMinutes();
-            const meridiam = hour < 12 ? 'am' : 'pm';
-            hour = hour % 12 || 12;
-            return `${hour}:${String(min).padStart(2, '0')} ${meridiam} `
-        } else {
-            return `${date.getDay()}/${String(date.getMonth()).padStart(2, '0')}/${String(date.getFullYear()).padStart(2, '0')} `
-        }
-    }
 
     return (
         <li key={message.time}
