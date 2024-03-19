@@ -1,7 +1,5 @@
-import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
-import { User, getUser } from '../store/UserSlice';
-import { AppState } from '../store/store';
+import { User } from '../store/UserSlice';
 
 // "undefined" means the URL will be computed from the `window.location` object
 // const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:4000';

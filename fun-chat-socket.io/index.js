@@ -1,7 +1,7 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const openai = require("./openai");
+const openai = require("./openai/openai");
 const db = require("./firebase");
 require("dotenv").config();
 const { initEventHandlers } = require("./handlers/eventHandlers");

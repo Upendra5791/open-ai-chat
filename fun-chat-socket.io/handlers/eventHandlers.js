@@ -4,6 +4,9 @@ const { sendMessage } = require("./message/sendMessage");
 const { sendMessageAI } = require("./message/sendMessageAI");
 const { searchUser } = require("./user/searchUser");
 const { greetUser } = require("./user/greetUser");
+const { initialiseTool } = require("./tool/initialiseTool");
+const { sendToolMessage } = require("./tool/sendToolMessage");
+
 const assistantUser = {
   id: "open-ai-v1",
   socketId: "open-ai-v1",
@@ -37,6 +40,8 @@ const initEventHandlers = ({ io, db, openai }) => {
     socket.on("send_message_ai", sendMessageAI({ io, socket, db, openai }));
     socket.on("search", searchUser({ io, socket, db, openai }));
     socket.on("greet_user", greetUser({ io, socket, db, openai }));
+    socket.on("initialise_tool", initialiseTool({ io, socket, db, openai }));
+    socket.on("send_tool_message", sendToolMessage({ io, socket, db, openai }));
     socket.onAny((eventName, ...args) => {
       console.log(eventName, socket.id);
     });

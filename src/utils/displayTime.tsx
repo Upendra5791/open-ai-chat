@@ -1,4 +1,5 @@
 const getDisplayTime = (inputDate: string) => {
+    if (!inputDate) return '';
     const today = new Date();
     today.setHours(0);
     today.setMinutes(0);

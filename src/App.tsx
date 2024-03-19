@@ -12,6 +12,9 @@ import { fetchChats } from './store/ChatsSlice';
 import ProtectedRoute from './ProtectedRoute';
 import { AppDispatch, AppState } from './store/store';
 import Settings from './settings/Settings';
+import Tools from './tools/Tools';
+import Tool from './tools/Tool';
+import { fetchTools, initialiseTools } from './store/ToolsSlice';
 
 function App() {
   const user = useSelector((state: AppState) => getUser(state));
@@ -68,6 +71,11 @@ function App() {
         if (!allChats?.length) greetUser();
       }
       chatsFn();
+      const toolsFn = async () => {
+        const allTools = await dispatch(fetchTools());
+        if (!allTools?.length) dispatch(initialiseTools(user));
+      }
+      toolsFn();
     }
   }, [user?.id]);
 
@@ -85,6 +93,8 @@ function App() {
             <Route path="/chats" element={<Chats />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/tool" element={<Tool />} />
           </Route>
 
         </Routes>

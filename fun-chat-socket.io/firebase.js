@@ -7,6 +7,7 @@ const {
   set,
   onValue,
 } = require("firebase/database");
+const { uid } = require("uid/secure");
 
 const firebaseConfig = {
   apiKey: "",
@@ -25,6 +26,8 @@ const userDBpath =
   process.env.PRODUCTION === "true" ? "prod/users/" : "dev/users/";
 const messageDBpath =
   process.env.PRODUCTION === "true" ? "prod/messages/" : "dev/messages/";
+  const threadDBpath =
+  process.env.PRODUCTION === "true" ? "prod/threads/" : "dev/threads/";
 
 const connect = () => {
   initializeDB().then(
@@ -155,6 +158,50 @@ const getMessages = (userId) => {
   });
 };
 
+const createThread = (messages) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const threadId = `thread_${uid(16)}`;
+      const db = getDatabase();
+      await set(ref(db, `${threadDBpath}/${threadId}`), messages);
+      resolve(threadId);
+    } catch (e) {
+      reject("Error adding message!", e);
+    }
+  });
+};
+
+const getThreadMessages = (threadId) => {
+  return new Promise((resolve, reject) => {
+    const dbRef = ref(getDatabase());
+    get(child(dbRef, `${threadDBpath}/${threadId}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          resolve(snapshot.val());
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  });
+};
+
+const addMessageToThread = ({threadId, messages}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = getDatabase();
+      await set(ref(db, `${threadDBpath}/${threadId}`), messages);
+      resolve(threadId);
+    } catch (e) {
+      reject("Error adding message!", e);
+    }
+  });
+};
+
+
 module.exports = {
   connect,
   writeUserData,
@@ -165,4 +212,7 @@ module.exports = {
   addMessage,
   removeMessage,
   getMessages,
+  createThread,
+  getThreadMessages,
+  addMessageToThread
 };

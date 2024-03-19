@@ -3,15 +3,16 @@ import { connectSocket, socket } from "./utils/socket";
 import { Chat, RecieveMessageResponse, addChat, addNewMessage } from "./store/ChatsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store/store";
-import { addChatToIndexedDB, addMessageToChat, updateUserToIndexedDB } from "./utils/indexedDB";
+import { addChatToIndexedDB, addMessageToChat, updateToolToIndexedDB, updateUserToIndexedDB } from "./utils/indexedDB";
 import { Assistant, updateUser } from "./store/UserSlice";
-const DEFAULT_AI_SENDER_ID = 'open-ai-v1';
+import { addNewToolMessage } from "./store/ToolsSlice";
 
 export const SocketMessageHandler = () => {
 
     const dispatch = useDispatch();
     const user = useSelector((state: AppState) => state.user);
     const chats = useSelector((state: AppState) => state.chatsSlice.chats);
+    const tools = useSelector((state: AppState) => state.toolsSlice.tools);
 
 /*     const greetUser = () => {
         if (!!user && !!Object.keys(user).length) {
@@ -42,45 +43,69 @@ export const SocketMessageHandler = () => {
 			// 	connectSocket(user);
 			// }, 2000)
         }
-        const handleReceiveMessage = (response: RecieveMessageResponse, callback: any) => {
-            const existingChat = chats.find(f => f.recipientId === response.sender.id);
-            if (!!existingChat) {
-                dispatch(addNewMessage({
-                    message: response.message,
-                    chat: existingChat
-                }));
-                const newMsgCount = !existingChat.unreadMessageCount ? 1 : existingChat.unreadMessageCount+1;
-                existingChat && addMessageToChat({
-                    chat: {
-                        ...existingChat,
-                        unreadMessageCount: newMsgCount
-                    },
-                    message: response.message,
-                }).then(() => console.log('Message updated in DB'));
-            } else {
-                const newChat: Chat = {
-                    id: response.sender.id,
-                    senderId: user.id,
-                    recipientId: response.sender.id,
-                    recipientName: response.sender.name,
-                    socketId: response.sender.socketId,
-                    messages: [response.message],
-                    unreadMessageCount: 1
-                };
-                dispatch(addChat(newChat));
-                addChatToIndexedDB(newChat)
-                    .then(() => {
-                        console.log('Chat added to IndexedDB!');
-                    })
-                    .catch(error => {
-                        console.error('Error saving user to IndexedDB:', error);
-                    });
 
+        const handleToolMessage = (response: RecieveMessageResponse, callback: any) => {
+            const tool = tools.find(f => f.recipientId === response.sender.id);
+            if (!!tool) {
+                dispatch(addNewToolMessage({
+                    message: response.message,
+                    tool
+                }));
+                updateToolToIndexedDB({
+                    ...tool,
+                    messages: [...tool.messages, response.message]
+                }).then(() => console.log('Tool Message updated in DB'));
             }
+
             callback({
                 messageId: response.message.id
             });
         }
+
+        const handleReceiveMessage = (response: RecieveMessageResponse, callback: any) => {
+            if (response.sender?.id.includes('tool')) {
+                handleToolMessage(response, callback);
+            } else {
+                const existingChat = chats.find(f => f.recipientId === response.sender.id);
+                if (!!existingChat) {
+                    dispatch(addNewMessage({
+                        message: response.message,
+                        chat: existingChat
+                    }));
+                    const newMsgCount = !existingChat.unreadMessageCount ? 1 : existingChat.unreadMessageCount + 1;
+                    existingChat && addMessageToChat({
+                        chat: {
+                            ...existingChat,
+                            unreadMessageCount: newMsgCount
+                        },
+                        message: response.message,
+                    }).then(() => console.log('Message updated in DB'));
+                } else {
+                    const newChat: Chat = {
+                        id: response.sender.id,
+                        senderId: user.id,
+                        recipientId: response.sender.id,
+                        recipientName: response.sender.name,
+                        socketId: response.sender.socketId,
+                        messages: [response.message],
+                        unreadMessageCount: 1
+                    };
+                    dispatch(addChat(newChat));
+                    addChatToIndexedDB(newChat)
+                        .then(() => {
+                            console.log('Chat added to IndexedDB!');
+                        })
+                        .catch(error => {
+                            console.error('Error saving user to IndexedDB:', error);
+                        });
+
+                }
+                callback({
+                    messageId: response.message.id
+                });
+            }
+        }
+
         const handleAssistantUpdate = (assistant: Assistant) => {
             const updatedUser = {
                 ...user,
@@ -101,6 +126,7 @@ export const SocketMessageHandler = () => {
         socket.on('disconnect', onDisconnect);
         socket.on('receive_message', handleReceiveMessage);
         socket.on('assistant_update', handleAssistantUpdate);
+        
         // only for dev
         socket.onAny((eventName, ...args) => {
            console.log(eventName, socket);

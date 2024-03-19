@@ -64,8 +64,9 @@ const handleAssistantMessage = async ({
     resetThread({ io, socket, db, openai, senderId });
   } else {
     openai
-      .postMessageToAI({
-        socket,
+      .postMessageToAssistant({
+        assistantId: socket.assistantId,
+        threadId: socket.threadId,
         message,
         instructions,
       })

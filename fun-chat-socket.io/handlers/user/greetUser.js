@@ -30,8 +30,9 @@ const greetUser = ({ io, socket, db, openai }) => {
         assistantId: assistant.id,
         threadId: thread.id,
       });
-      const generatedMessage = await openai.postMessageToAI({
-        socket,
+      const generatedMessage = await openai.postMessageToAssistant({
+        assistantId: assistant.id,
+        threadId: thread.id,
         message,
       });
       postMessagetoUser({ io, db, user, generatedMessage });

@@ -1,4 +1,5 @@
 import { Chat, Message } from "../store/ChatsSlice";
+import { Tool } from "../store/ToolsSlice";
 import { User } from "../store/UserSlice";
 
 export const initializeChatDB = () => {
@@ -286,3 +287,81 @@ export const getUserFromIndexedDB = () => {
         };
     });
 };
+
+export const getToolsFromIndexedDB = () => {
+  return new Promise<Chat[]>((resolve, reject) => {
+      const request = window.indexedDB.open('fun_chat_tools_db', 1);
+      request.onerror = (event: any) => {
+          reject(event.target.errorCode);
+      };
+      request.onsuccess = (event: any) => {
+          const db = event.target.result;
+          db.transaction("tools")
+              .objectStore("tools")
+              .getAll().onsuccess = ((event: any) => {
+                  resolve(event.target.result);
+              });
+      };
+      request.onupgradeneeded = (event: any) => {
+          const db = event.target.result;
+          db.createObjectStore('tools', { keyPath: 'id' });
+      };
+  });
+};
+
+export const addToolToIndexedDB = (tool: Tool) => {
+  return new Promise<void>((resolve, reject) => {
+
+    const request: IDBOpenDBRequest = window.indexedDB.open("fun_chat_tools_db", 1);
+    request.onsuccess = (event: any) => {
+        const db = event.target.result;
+        const transaction = db.transaction(['tools'], 'readwrite');
+        const objectStore = transaction.objectStore('tools');
+        const addRequest = objectStore.add(tool);
+        addRequest.onsuccess = () => {
+            resolve();
+        };
+        addRequest.onerror = (error: any) => {
+            reject(error);
+        };
+    };
+    request.onupgradeneeded = (event: any) => {
+      const db = event.target.result;
+      db.createObjectStore("tools", { keyPath: "id"});
+    };
+  });
+};
+
+export const updateToolToIndexedDB = (tool: Tool) => {
+  return new Promise<void>((resolve, reject) => {
+      const request = window.indexedDB.open('fun_chat_tools_db', 1);
+      request.onerror = (event: any) => {
+          reject(event.target.errorCode);
+      };
+      request.onsuccess = (event: any) => {
+          const db = event.target.result;
+          const transaction = db.transaction(['tools'], 'readwrite');
+          const objectStore = transaction.objectStore('tools');
+          const request = objectStore.get(tool.id);
+          request.onsuccess = (event: any) => {
+            let data: Tool = event.target.result;
+            data = tool;
+            const requestUpdate = objectStore.put(data);
+            requestUpdate.onerror = (event: any) => {
+              // Do something with the error
+            };
+            requestUpdate.onsuccess = (event: any) => {
+              // Success - the data is updated!
+            };
+            transaction.oncomplete = () => {
+              resolve();
+            };
+          };
+      };
+      request.onupgradeneeded = (event: any) => {
+          const db = event.target.result;
+          db.createObjectStore('tools', { keyPath: 'id' });
+      };
+  });
+};
+
