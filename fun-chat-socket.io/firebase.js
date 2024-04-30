@@ -7,6 +7,7 @@ const {
   set,
   onValue,
 } = require("firebase/database");
+const { uid } = require("uid/secure");
 
 const firebaseConfig = {
   apiKey: "",
@@ -21,9 +22,12 @@ const firebaseConfig = {
 let dbRef;
 let userMap = {};
 
-const dbPath = () => {
-  return process.env.PRODUCTION === 'true' ? 'prod/users/' : 'dev/users/' 
-}
+const userDBpath =
+  process.env.PRODUCTION === "true" ? "prod/users/" : "dev/users/";
+const messageDBpath =
+  process.env.PRODUCTION === "true" ? "prod/messages/" : "dev/messages/";
+  const threadDBpath =
+  process.env.PRODUCTION === "true" ? "prod/threads/" : "dev/threads/";
 
 const connect = () => {
   initializeDB().then(
@@ -38,7 +42,7 @@ const connect = () => {
 };
 
 const listenForUserUpdates = () => {
-  const usersRef = ref(getDatabase(), dbPath());
+  const usersRef = ref(getDatabase(), userDBpath);
   onValue(usersRef, (snapshot) => {
     const data = snapshot.val();
     userMap = data || {};
@@ -65,7 +69,7 @@ const writeUserData = (user) => {
   return new Promise((resolve, reject) => {
     try {
       const db = getDatabase();
-      set(ref(db, dbPath() + user.id), user);
+      set(ref(db, userDBpath + user.id), user);
       resolve();
     } catch (e) {
       reject("Error registering user!", e);
@@ -75,7 +79,7 @@ const writeUserData = (user) => {
 
 const fetchUsers = () => {
   return new Promise((resolve) => {
-    get(child(dbRef, dbPath()))
+    get(child(dbRef, userDBpath))
       .then((snapshot) => {
         resolve(snapshot.exists() ? Object.values(snapshot.val()) : []);
       })
@@ -88,7 +92,7 @@ const fetchUsers = () => {
 
 const fetchUser = (userId) => {
   return new Promise((resolve) => {
-    get(child(dbRef, `dbPath()${userId}`))
+    get(child(dbRef, `userDBpath${userId}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
           resolve(snapshot.val());
@@ -112,12 +116,103 @@ const userNameAlreadyExists = async (user) => {
   });
 };
 
+const addMessage = (userId, message) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const db = getDatabase();
+      set(ref(db, `${messageDBpath}/${userId}/${message.id}`), message);
+      resolve();
+    } catch (e) {
+      reject("Error adding message!", e);
+    }
+  });
+};
+
+const removeMessage = (userId, message) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const db = getDatabase();
+      set(ref(db, `${messageDBpath}/${userId}/${message.id}`), null);
+      resolve();
+    } catch (e) {
+      reject("Error removing message!", e);
+    }
+  });
+};
+
+const getMessages = (userId) => {
+  return new Promise((resolve, reject) => {
+    const dbRef = ref(getDatabase());
+    get(child(dbRef, `${messageDBpath}/${userId}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          resolve(snapshot.val());
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  });
+};
+
+const createThread = (messages) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const threadId = `thread_${uid(16)}`;
+      const db = getDatabase();
+      await set(ref(db, `${threadDBpath}/${threadId}`), messages);
+      resolve(threadId);
+    } catch (e) {
+      reject("Error adding message!", e);
+    }
+  });
+};
+
+const getThreadMessages = (threadId) => {
+  return new Promise((resolve, reject) => {
+    const dbRef = ref(getDatabase());
+    get(child(dbRef, `${threadDBpath}/${threadId}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          resolve(snapshot.val());
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  });
+};
+
+const addMessageToThread = ({threadId, messages}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = getDatabase();
+      await set(ref(db, `${threadDBpath}/${threadId}`), messages);
+      resolve(threadId);
+    } catch (e) {
+      reject("Error adding message!", e);
+    }
+  });
+};
+
+
 module.exports = {
   connect,
-  initializeDB,
   writeUserData,
   fetchUser,
   fetchUsers,
   getUserMap,
   userNameAlreadyExists,
+  addMessage,
+  removeMessage,
+  getMessages,
+  createThread,
+  getThreadMessages,
+  addMessageToThread
 };

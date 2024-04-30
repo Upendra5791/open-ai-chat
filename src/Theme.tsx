@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getTheme, setTheme } from "./store/ThemeSlice";
-import { AppState } from "./store/store";
+import { useDispatch } from "react-redux";
+import { setTheme } from "./store/ThemeSlice";
 
 
 const Theme = () => {
@@ -15,7 +14,7 @@ const Theme = () => {
             document.documentElement.classList.remove('dark');
             dispatch(setTheme('light'));
         }
-    }, []);
+    }, [dispatch]);
 
     return null
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const openai = require("./openai");
+const openai = require("./openai/openai");
 const db = require("./firebase");
 require("dotenv").config();
 const { initEventHandlers } = require("./handlers/eventHandlers");
@@ -15,7 +15,7 @@ const io = socketIo(server, {
       "https://chat-open-ai-ab0d4.web.app",
       "https://chat-open-ai-ab0d4.firebaseapp.com",
     ],
-  },
+  }
 });
 
 server.listen(4000, () => {
